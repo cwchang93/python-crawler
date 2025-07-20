@@ -151,41 +151,25 @@ def fetch_news_by_keyword(keyword):
 def generate_stock_plots(symbol, hist):
     """Generate stock analysis plots and save them as static files"""
     try:
-        # ✅ 設定中文字型（可依作業系統更換）
-        plt.rcParams['font.family'] = 'Noto Sans TC'  # 可改為 'Microsoft JhengHei'、'Heiti TC'、'PingFang TC'
-
-        # Create figure with two subplots
-        fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 10), gridspec_kw={'height_ratios': [2, 1]})
+        plt.figure(figsize=(12, 6))
+        plt.plot(hist.index, hist['Close'], label='Close', color='#1f77b4', linewidth=2)
+        plt.plot(hist.index, hist['MA5'], label='5-day MA', linestyle='--', color='#ff7f0e')
+        plt.plot(hist.index, hist['MA10'], label='10-day MA', linestyle='--', color='#2ca02c')
         
-        # Plot 1: Price and Moving Averages
-        ax1.plot(hist.index, hist['Close'], label='Close Price', color='#1f77b4')
-        ax1.plot(hist.index, hist['MA5'], label='5-day MA', linestyle='--', color='#ff7f0e')
-        ax1.plot(hist.index, hist['MA10'], label='10-day MA', linestyle='--', color='#2ca02c')
-        ax1.set_title(f'{symbol} Price Trend & MA')
-        ax1.set_ylabel('Price (TWD)')
-        ax1.legend()
-        ax1.grid(True, linestyle='--', alpha=0.7)
+        plt.title(f'{symbol} Stock Price Trend')
+        plt.ylabel('Price (TWD)')
+        plt.legend()
+        plt.grid(True, linestyle='--', alpha=0.7)
         
-        # Format x-axis dates
+        # Format x-axis
         date_format = DateFormatter('%m-%d')
-        ax1.xaxis.set_major_formatter(date_format)
-        ax1.xaxis.set_major_locator(mdates.WeekdayLocator(interval=1))
+        plt.gca().xaxis.set_major_formatter(date_format)
+        plt.gca().xaxis.set_major_locator(mdates.WeekdayLocator(interval=1))
+        plt.xticks(rotation=45)
         
-        # Plot 2: Volume
-        ax2.bar(hist.index, hist['Volume'], color='#1f77b4', alpha=0.7)
-        ax2.set_title('Volume')
-        ax2.set_ylabel('Volume')
-        ax2.xaxis.set_major_formatter(date_format)
-        ax2.xaxis.set_major_locator(mdates.WeekdayLocator(interval=1))
-        
-        # Rotate x-axis labels
-        plt.setp(ax1.xaxis.get_majorticklabels(), rotation=45)
-        plt.setp(ax2.xaxis.get_majorticklabels(), rotation=45)
-        
-        # Adjust layout
         plt.tight_layout()
         
-        # Save the figure
+        # Save the plot
         plot_filename = f'stock_plot_{symbol}.png'
         plot_path = os.path.join('static', 'plots', plot_filename)
         plt.savefig(plot_path, dpi=100, bbox_inches='tight')
@@ -193,8 +177,9 @@ def generate_stock_plots(symbol, hist):
         
         return plot_filename
     except Exception as e:
-        print(f"Error generating plots: {e}")
+        print(f"Error generating stock plot: {e}")
         return None
+
 def analyze_stock(symbol):
     try:
         # Get stock data
