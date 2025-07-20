@@ -7,3 +7,5 @@ pandas
 gunicorn
 twstock
 lxml
+matplotlib
+numpy

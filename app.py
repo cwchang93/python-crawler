@@ -9,8 +9,19 @@ import twstock
 from datetime import datetime, timedelta
 from datetime import datetime as dt
 import urllib3
+import os
+import json
+import numpy as np
+import matplotlib
+matplotlib.use('Agg')  # Set the backend to 'Agg' to avoid GUI issues
+import matplotlib.pyplot as plt
+from matplotlib.dates import DateFormatter
+import matplotlib.dates as mdates
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
+
+# Ensure static directory exists for saving plots
+os.makedirs('static/plots', exist_ok=True)
 
 app = Flask(__name__)
 
@@ -137,35 +148,131 @@ def fetch_news_by_keyword(keyword):
             pass
     return news_items
 
+def generate_stock_plots(symbol, hist):
+    """Generate stock analysis plots and save them as static files"""
+    try:
+        # ✅ 設定中文字型（可依作業系統更換）
+        plt.rcParams['font.family'] = 'Noto Sans TC'  # 可改為 'Microsoft JhengHei'、'Heiti TC'、'PingFang TC'
+
+        # Create figure with two subplots
+        fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 10), gridspec_kw={'height_ratios': [2, 1]})
+        
+        # Plot 1: Price and Moving Averages
+        ax1.plot(hist.index, hist['Close'], label='Close Price', color='#1f77b4')
+        ax1.plot(hist.index, hist['MA5'], label='5-day MA', linestyle='--', color='#ff7f0e')
+        ax1.plot(hist.index, hist['MA10'], label='10-day MA', linestyle='--', color='#2ca02c')
+        ax1.set_title(f'{symbol} Price Trend & MA')
+        ax1.set_ylabel('Price (TWD)')
+        ax1.legend()
+        ax1.grid(True, linestyle='--', alpha=0.7)
+        
+        # Format x-axis dates
+        date_format = DateFormatter('%m-%d')
+        ax1.xaxis.set_major_formatter(date_format)
+        ax1.xaxis.set_major_locator(mdates.WeekdayLocator(interval=1))
+        
+        # Plot 2: Volume
+        ax2.bar(hist.index, hist['Volume'], color='#1f77b4', alpha=0.7)
+        ax2.set_title('Volume')
+        ax2.set_ylabel('Volume')
+        ax2.xaxis.set_major_formatter(date_format)
+        ax2.xaxis.set_major_locator(mdates.WeekdayLocator(interval=1))
+        
+        # Rotate x-axis labels
+        plt.setp(ax1.xaxis.get_majorticklabels(), rotation=45)
+        plt.setp(ax2.xaxis.get_majorticklabels(), rotation=45)
+        
+        # Adjust layout
+        plt.tight_layout()
+        
+        # Save the figure
+        plot_filename = f'stock_plot_{symbol}.png'
+        plot_path = os.path.join('static', 'plots', plot_filename)
+        plt.savefig(plot_path, dpi=100, bbox_inches='tight')
+        plt.close()
+        
+        return plot_filename
+    except Exception as e:
+        print(f"Error generating plots: {e}")
+        return None
 def analyze_stock(symbol):
     try:
+        # Get stock data
         ticker = yf.Ticker(f"{symbol}.TW")
-        hist = ticker.history(period="1mo")
+        hist = ticker.history(period="1mo", interval="1d")        
+
         if hist.empty:
             return None
-        today_price = hist.iloc[-1]['Close']
-        delta_1d = (hist.iloc[-1]['Close'] - hist.iloc[-2]['Close']) / hist.iloc[-2]['Close'] * 100
-        delta_7d = (hist.iloc[-1]['Close'] - hist.iloc[-6]['Close']) / hist.iloc[-6]['Close'] * 100 if len(hist) >= 7 else None
-        delta_30d = (hist.iloc[-1]['Close'] - hist.iloc[0]['Close']) / hist.iloc[0]['Close'] * 100
-
+        
+        # Calculate basic statistics
+        close_prices = hist['Close']
+        volumes = hist['Volume']
+        
+        # Calculate moving averages
+        hist['MA5'] = close_prices.rolling(window=5).mean()
+        hist['MA10'] = close_prices.rolling(window=10).mean()
+        
+        # Calculate daily returns
+        hist['Daily_Return'] = close_prices.pct_change() * 100
+        
+        # Find max gain and max drop days
+        max_gain_idx = hist['Daily_Return'].idxmax()
+        max_drop_idx = hist['Daily_Return'].idxmin()
+        
+        # Calculate statistics
+        avg_close = close_prices.mean()
+        std_close = close_prices.std()
+        total_volume = volumes.sum()
+        avg_volume = volumes.mean()
+        
+        # Generate plots
+        plot_filename = generate_stock_plots(symbol, hist)
+        
+        # Get stock name
         stock_name = twstock.codes.get(symbol).name if symbol in twstock.codes else symbol
-
-        return {
+        
+        # Prepare analysis summary
+        analysis_summary = {
             'symbol': symbol,
             'name': stock_name,
-            'price': round(today_price, 2),
-            'delta_1d': round(delta_1d, 2),
-            'delta_7d': round(delta_7d, 2) if delta_7d is not None else None,
-            'delta_30d': round(delta_30d, 2),
-            'history': hist['Close'].round(2).to_dict()
+            'current_price': close_prices.iloc[-1],
+            'avg_close': avg_close,
+            'std_close': std_close,
+            'volatility': (std_close / avg_close) * 100,  # Volatility as percentage
+            'max_gain': hist['Daily_Return'].max(),
+            'max_gain_date': max_gain_idx.strftime('%Y-%m-%d'),
+            'max_drop': hist['Daily_Return'].min(),
+            'max_drop_date': max_drop_idx.strftime('%Y-%m-%d'),
+            'total_volume': total_volume,
+            'avg_volume': avg_volume,
+            'ma5': hist['MA5'].iloc[-1],
+            'ma10': hist['MA10'].iloc[-1],
+            'plot_filename': plot_filename,
+            'last_updated': datetime.now().strftime('%Y-%m-%d %H:%M:%S')
         }
+        
+        return analysis_summary
+        
     except Exception as e:
         print(f"Error analyzing stock {symbol}: {e}")
         return None
 
 def get_hot_stocks():
     hot_symbols = ['2330', '2317', '2303', '2454', '2882', '2603']
-    return [analyze_stock(sym) for sym in hot_symbols if analyze_stock(sym)]
+    hot_stocks = []
+    for sym in hot_symbols:
+        stock_data = analyze_stock(sym)
+        if stock_data:
+            # Only include essential data for the hot stocks table
+            hot_stocks.append({
+                'symbol': stock_data['symbol'],
+                'name': stock_data['name'],
+                'price': round(stock_data['current_price'], 2),
+                'delta_1d': round((stock_data['current_price'] - stock_data['avg_close']) / stock_data['avg_close'] * 100, 2),
+                'delta_7d': None,  # Not calculated in the new analysis
+                'delta_30d': round(stock_data['volatility'], 2)
+            })
+    return hot_stocks
 
 @app.route("/", methods=['GET', 'POST'])
 def index():

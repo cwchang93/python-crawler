@@ -75,21 +75,58 @@
 
             {% if stock_result %}
                 <div class="stock-result">
-                    {% if stock_result %}
-                    <h3>股票代號：{{ stock_result.name }} ({{ stock_result.symbol }})</h3>
+                    <div class="stock-header">
+                        <h3>{{ stock_result.name }} ({{ stock_result.symbol }})</h3>
+                        <div class="stock-price">
+                            <span class="price">{{ "%.2f"|format(stock_result.current_price) }}</span>
+                            <span class="price-change {% if (stock_result.current_price - stock_result.avg_close) >= 0 %}positive{% else %}negative{% endif %}">
+                                {{ "%.2f"|format(stock_result.current_price - stock_result.avg_close) }} ({{ "%.2f"|format((stock_result.current_price - stock_result.avg_close) / stock_result.avg_close * 100) }}%)
+                            </span>
+                        </div>
+                    </div>
+
+                    <div class="stock-stats">
+                        <div class="stat-item">
+                            <span class="stat-label">平均收盤價</span>
+                            <span class="stat-value">{{ "%.2f"|format(stock_result.avg_close) }}</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">波動率</span>
+                            <span class="stat-value">{{ "%.2f"|format(stock_result.volatility) }}%</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">5日均線</span>
+                            <span class="stat-value">{{ "%.2f"|format(stock_result.ma5) }}</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">10日均線</span>
+                            <span class="stat-value">{{ "%.2f"|format(stock_result.ma10) }}</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">最大單日漲幅</span>
+                            <span class="stat-value positive">{{ "%.2f"|format(stock_result.max_gain) }}% ({{ stock_result.max_gain_date }})</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">最大單日跌幅</span>
+                            <span class="stat-value negative">{{ "%.2f"|format(stock_result.max_drop) }}% ({{ stock_result.max_drop_date }})</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">總成交量</span>
+                            <span class="stat-value">{{ "{:,.0f}".format(stock_result.total_volume) }}</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">平均成交量</span>
+                            <span class="stat-value">{{ "{:,.0f}".format(stock_result.avg_volume) }}</span>
+                        </div>
+                    </div>
+
+                    {% if stock_result.plot_filename %}
+                    <div class="stock-chart">
+                        <img src="{{ url_for('static', filename='plots/' + stock_result.plot_filename) }}" alt="{{ stock_result.symbol }} 股價分析圖" class="chart-img">
+                    </div>
                     {% endif %}
-                    <p>目前價格：{{ stock_result.price }}</p>
-                    <p class="{% if stock_result.delta_1d >= 0 %}positive{% else %}negative{% endif %}">
-                        近 1 日漲跌幅：{{ stock_result.delta_1d }}%
-                    </p>
-                    {% if stock_result.delta_7d is not none %}
-                    <p class="{% if stock_result.delta_7d >= 0 %}positive{% else %}negative{% endif %}">
-                        近 7 日漲跌幅：{{ stock_result.delta_7d }}%
-                    </p>
-                    {% endif %}
-                    <p class="{% if stock_result.delta_30d >= 0 %}positive{% else %}negative{% endif %}">
-                        近 30 日漲跌幅：{{ stock_result.delta_30d }}%
-                    </p>
+                    
+                    <p class="last-updated">最後更新時間：{{ stock_result.last_updated }}</p>
                 </div>
             {% endif %}
         </div>
