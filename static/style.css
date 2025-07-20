@@ -1,0 +1,241 @@
+/* Base Styles */
+:root {
+    --primary-color: #2c3e50;
+    --secondary-color: #3498db;
+    --background-color: #f5f6fa;
+    --text-color: #2c3e50;
+    --positive-color: #e74c3c;
+    --negative-color: #27ae60;
+    --border-color: #dcdde1;
+    --card-bg: #ffffff;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: 'Segoe UI', 'Microsoft JhengHei', Arial, sans-serif;
+    line-height: 1.6;
+    color: var(--text-color);
+    background-color: var(--background-color);
+    padding: 20px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+h1, h2, h3 {
+    color: var(--primary-color);
+    margin: 20px 0 15px;
+}
+
+h1 {
+    font-size: 24px;
+    border-bottom: 2px solid var(--secondary-color);
+    padding-bottom: 10px;
+    margin-bottom: 20px;
+}
+
+h2 {
+    font-size: 20px;
+    color: var(--secondary-color);
+    margin-top: 30px;
+}
+
+/* News Section */
+.news-list {
+    list-style: none;
+    background: var(--card-bg);
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    margin-bottom: 20px;
+}
+
+.news-list li {
+    padding: 10px 0;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.news-list li:last-child {
+    border-bottom: none;
+}
+
+.news-list a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: color 0.3s;
+}
+
+.news-list a:hover {
+    color: var(--secondary-color);
+}
+
+/* Keywords Section */
+.keywords-section {
+    background: var(--card-bg);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.keywords-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 15px;
+    list-style-position: inside;
+    padding: 0;
+}
+
+.keywords-list li {
+    background: #e8f4fc;
+    padding: 5px 12px;
+    border-radius: 15px;
+    font-size: 14px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Stock Search */
+.stock-search {
+    background: var(--card-bg);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+form {
+    display: flex;
+    gap: 10px;
+    margin: 15px 0;
+}
+
+input[type="text"] {
+    flex: 1;
+    padding: 10px 15px;
+    border: 1px solid var(--border-color);
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+button {
+    background-color: var(--secondary-color);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #2980b9;
+}
+
+/* Stock Result */
+.stock-result {
+    margin-top: 20px;
+    padding: 15px;
+    background: #f8f9fa;
+    border-radius: 6px;
+    border-left: 4px solid var(--secondary-color);
+}
+
+.stock-result h3 {
+    margin-top: 0;
+    color: var(--primary-color);
+}
+
+.stock-result p {
+    margin: 8px 0;
+    font-size: 16px;
+}
+
+/* Hot Stocks Table */
+.hot-stocks {
+    background: var(--card-bg);
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 15px;
+    font-size: 14px;
+}
+
+th, td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-color);
+}
+
+th {
+    background-color: #f2f6fc;
+    font-weight: 600;
+    color: var(--primary-color);
+}
+
+tr:hover {
+    background-color: #f8f9fa;
+}
+
+/* Color Classes */
+.positive {
+    color: var(--negative-color);
+    font-weight: 500;
+}
+
+.negative {
+    color: var(--positive-color);
+    font-weight: 500;
+}
+
+.error-message {
+    color: #e74c3c;
+    margin-top: 10px;
+    padding: 10px;
+    background-color: #fde8e8;
+    border-radius: 4px;
+    border-left: 4px solid #e74c3c;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .container {
+        padding: 10px;
+    }
+    
+    h1 {
+        font-size: 20px;
+    }
+    
+    h2 {
+        font-size: 18px;
+    }
+    
+    form {
+        flex-direction: column;
+    }
+    
+    button {
+        width: 100%;
+    }
+    
+    th, td {
+        padding: 8px 10px;
+        font-size: 13px;
+    }
+}

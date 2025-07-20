@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>股市熱門關鍵字分析</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>【最新股市新聞】</h1>
+        <ul class="news-list">
+            {% for item in news %}
+                <li><a href="{{ item.link }}" target="_blank">{{ item.title }}</a></li>
+            {% endfor %}
+        </ul>
+
+        <div class="keywords-section">
+            <h2>【關鍵字 TOP 10】</h2>
+            <ol class="keywords-list">
+                {% for word, count in keywords %}
+                    <li>{{ word }} - {{ count }}</li>
+                {% endfor %}
+            </ol>
+        </div>
+
+        <div class="stock-search">
+            <h2>【台股查詢】</h2>
+            <form method="POST">
+                <input type="text" name="symbol" placeholder="請輸入股票代號（如 2330）" required>
+                <button type="submit">查詢</button>
+            </form>
+
+            {% if error_message %}
+                <p class="error-message">{{ error_message }}</p>
+            {% endif %}
+
+            {% if stock_result %}
+                <div class="stock-result">
+                    <h3>股票代號：{{ stock_result.symbol }}</h3>
+                    <p>目前價格：{{ stock_result.price }}</p>
+                    <p class="{% if stock_result.delta_1d >= 0 %}positive{% else %}negative{% endif %}">
+                        近 1 日漲跌幅：{{ stock_result.delta_1d }}%
+                    </p>
+                    {% if stock_result.delta_7d is not none %}
+                    <p class="{% if stock_result.delta_7d >= 0 %}positive{% else %}negative{% endif %}">
+                        近 7 日漲跌幅：{{ stock_result.delta_7d }}%
+                    </p>
+                    {% endif %}
+                    <p class="{% if stock_result.delta_30d >= 0 %}positive{% else %}negative{% endif %}">
+                        近 30 日漲跌幅：{{ stock_result.delta_30d }}%
+                    </p>
+                </div>
+            {% endif %}
+        </div>
+
+        <div class="hot-stocks">
+            <h2>【熱門台股（市值型）】</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>代號</th>
+                        <th>價格</th>
+                        <th>1 日漲跌幅</th>
+                        <th>7 日</th>
+                        <th>30 日</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for stock in hot_stocks %}
+                    <tr>
+                        <td>{{ stock.symbol }}</td>
+                        <td>{{ stock.price }}</td>
+                        <td class="{% if stock.delta_1d >= 0 %}positive{% else %}negative{% endif %}">{{ stock.delta_1d }}%</td>
+                        <td class="{% if stock.delta_7d is not none and stock.delta_7d >= 0 %}positive{% elif stock.delta_7d is not none %}negative{% endif %}">
+                            {% if stock.delta_7d is not none %}{{ stock.delta_7d }}%{% else %}-{% endif %}
+                        </td>
+                        <td class="{% if stock.delta_30d >= 0 %}positive{% else %}negative{% endif %}">{{ stock.delta_30d }}%</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</body>
+</html>
