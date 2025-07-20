@@ -11,18 +11,56 @@
         <h1>【最新股市新聞】</h1>
         <ul class="news-list">
             {% for item in news %}
-                <li><a href="{{ item.link }}" target="_blank">{{ item.title }}</a></li>
+                <li class="news-item">
+                    <div class="news-meta">
+                        <span class="news-time">{{ item.time }}</span>
+                        {% if item.category %}
+                            <span class="news-category">{{ item.category }}</span>
+                        {% endif %}
+                    </div>
+                    <a href="{{ item.link }}" target="_blank" class="news-title">{{ item.title }}</a>
+                </li>
             {% endfor %}
         </ul>
 
-        <div class="keywords-section">
-            <h2>【關鍵字 TOP 10】</h2>
-            <ol class="keywords-list">
-                {% for word, count in keywords %}
-                    <li>{{ word }} - {{ count }}</li>
-                {% endfor %}
-            </ol>
-        </div>
+        <!-- <div class="keywords-section">
+            <h2>【熱門關鍵字 TOP 10】</h2>
+            <div class="keywords-list">
+                {% if not keyword_news %}
+                    <div class="no-keywords">
+                        <p>正在載入熱門新聞...</p>
+                        <p class="small">如果長時間沒有顯示，請嘗試重新整理頁面</p>
+                    </div>
+                {% else %}
+                    {% for keyword, news_items in keyword_news.items() %}
+                        <div class="keyword-item">
+                            <h3>#{{ keyword }}</h3>
+                            {% if news_items %}
+                                <ul class="news-by-keyword">
+                                    {% for news_item in news_items %}
+                                        <li>
+                                            <a href="{{ news_item.link }}" target="_blank" rel="noopener noreferrer">
+                                                {{ news_item.title }}
+                                            </a>
+                                            {% if news_item.time %}
+                                                <span class="news-time">
+                                                    {{ news_item.time|datetimeformat }}
+                                                </span>
+                                            {% endif %}
+                                        </li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <div class="no-news">
+                                    <p>暫無相關新聞</p>
+                                    <p class="small">嘗試其他關鍵字或稍後再試</p>
+                                </div>
+                            {% endif %}
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div> -->
 
         <div class="stock-search">
             <h2>【台股查詢】</h2>

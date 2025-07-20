@@ -53,53 +53,191 @@ h2 {
     list-style: none;
     background: var(--card-bg);
     border-radius: 8px;
-    padding: 20px;
+    padding: 15px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
     margin-bottom: 20px;
+    max-width: 100%;
 }
 
-.news-list li {
-    padding: 10px 0;
+.news-list .news-item {
+    padding: 12px 10px;
     border-bottom: 1px solid var(--border-color);
+    transition: background-color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+
 }
 
-.news-list li:last-child {
-    border-bottom: none;
+.news-list .news-item:hover {
+    background-color: #f9f9f9;
 }
 
-.news-list a {
-    color: var(--primary-color);
+.news-title {
+    color: #1a1a1a;
     text-decoration: none;
-    transition: color 0.3s;
+    font-size: 1.05em;
+    line-height: 1.5;
+    transition: color 0.2s;
+    flex: 1;
+    padding-right: 15px;
 }
 
-.news-list a:hover {
-    color: var(--secondary-color);
+.news-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-size: 0.85em;
+    color: #666;
+    white-space: nowrap;
+    margin-left: auto;
+    padding-left: 15px;
+}
+
+.news-time {
+    color: #e03f19;
+    font-weight: 500;
+    font-size: 0.9em;
+}
+
+.news-category {
+    background-color: #f0f0f0;
+    color: #555;
+    padding: 2px 8px;
+    border-radius: 3px;
+    font-size: 0.8em;
+    display: inline-block;
+}
+
+.news-title:hover {
+    color: #e03f19;
 }
 
 /* Keywords Section */
 .keywords-section {
     background: var(--card-bg);
-    border-radius: 8px;
-    padding: 20px;
+    border-radius: 12px;
+    padding: 25px;
+    margin: 30px 0;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+.keywords-section h2 {
+    color: #2c3e50;
     margin-bottom: 20px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    padding-bottom: 10px;
+    border-bottom: 2px solid #f0f0f0;
+    font-size: 1.5em;
 }
 
 .keywords-list {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 15px;
-    list-style-position: inside;
-    padding: 0;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 25px;
+    margin-top: 15px;
 }
 
-.keywords-list li {
-    background: #e8f4fc;
-    padding: 5px 12px;
-    border-radius: 15px;
-    font-size: 14px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+.keyword-item {
+    background: #ffffff;
+    border-radius: 10px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    border-left: 4px solid #3498db;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.keyword-item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+.keyword-item h3 {
+    margin: 0 0 15px 0;
+    color: #2c3e50;
+    font-size: 1.2em;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+}
+
+.keyword-item h3:before {
+    content: '#';
+    color: #7f8c8d;
+    margin-right: 5px;
+    font-weight: normal;
+}
+
+.news-by-keyword {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.news-by-keyword li {
+    padding: 12px 0;
+    border-bottom: 1px solid #f0f0f0;
+    transition: background-color 0.2s;
+}
+
+.news-by-keyword li:last-child {
+    border-bottom: none;
+}
+
+.news-by-keyword li:hover {
+    background-color: #f9f9f9;
+}
+
+.news-by-keyword a {
+    color: #2c3e50;
+    text-decoration: none;
+    font-size: 0.95em;
+    line-height: 1.5;
+    display: block;
+    transition: color 0.2s;
+}
+
+.news-by-keyword a:hover {
+    color: #e74c3c;
+    text-decoration: underline;
+}
+
+.news-time {
+    display: block;
+    font-size: 0.8em;
+    color: #7f8c8d;
+    margin-top: 5px;
+    font-weight: 400;
+}
+
+.no-news, .no-keywords {
+    text-align: center;
+    padding: 30px 20px;
+    color: #7f8c8d;
+    font-style: italic;
+    background: #f9f9f9;
+    border-radius: 8px;
+    margin: 10px 0;
+}
+
+.no-news p, .no-keywords p {
+    margin: 5px 0;
+}
+
+.no-news .small, .no-keywords .small {
+    font-size: 0.85em;
+    color: #95a5a6;
+}
+
+/* Loading animation */
+@keyframes pulse {
+    0% { opacity: 0.6; }
+    50% { opacity: 1; }
+    100% { opacity: 0.6; }
+}
+
+.loading {
+    animation: pulse 1.5s infinite;
 }
 
 /* Stock Search */
