@@ -192,14 +192,14 @@ tr:hover {
     background-color: #f8f9fa;
 }
 
-/* Color Classes */
+/* Color Classes - Taiwanese Market Style (紅漲綠跌) */
 .positive {
-    color: var(--negative-color);
+    color: #e74c3c;  /* Red for increase */
     font-weight: 500;
 }
 
 .negative {
-    color: var(--positive-color);
+    color: #27ae60;  /* Green for decrease */
     font-weight: 500;
 }
 

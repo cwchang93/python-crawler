@@ -37,7 +37,9 @@
 
             {% if stock_result %}
                 <div class="stock-result">
-                    <h3>股票代號：{{ stock_result.symbol }}</h3>
+                    {% if stock_result %}
+                    <h3>股票代號：{{ stock_result.name }} ({{ stock_result.symbol }})</h3>
+                    {% endif %}
                     <p>目前價格：{{ stock_result.price }}</p>
                     <p class="{% if stock_result.delta_1d >= 0 %}positive{% else %}negative{% endif %}">
                         近 1 日漲跌幅：{{ stock_result.delta_1d }}%
@@ -69,7 +71,7 @@
                 <tbody>
                     {% for stock in hot_stocks %}
                     <tr>
-                        <td>{{ stock.symbol }}</td>
+                        <td>{{ stock.name }} ({{ stock.symbol }})</td>
                         <td>{{ stock.price }}</td>
                         <td class="{% if stock.delta_1d >= 0 %}positive{% else %}negative{% endif %}">{{ stock.delta_1d }}%</td>
                         <td class="{% if stock.delta_7d is not none and stock.delta_7d >= 0 %}positive{% elif stock.delta_7d is not none %}negative{% endif %}">

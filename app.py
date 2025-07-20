@@ -1,10 +1,11 @@
-from flask import Flask, render_template, request
+from flask import Flask, render_template, request, jsonify
 import requests
 from bs4 import BeautifulSoup
 from collections import Counter
 import jieba
 import yfinance as yf
 import pandas as pd
+import twstock
 from datetime import datetime, timedelta
 
 app = Flask(__name__)
@@ -29,11 +30,23 @@ def extract_keywords(news_items):
 
 def analyze_stock(symbol):
     try:
+        # Get stock info using twstock
+        stock = twstock.Stock(symbol)
+        
+        # Get the stock's Chinese name
+        stock_name = stock.sid  # Default to symbol
+        try:
+            stock_name = twstock.realtime.get(symbol)['info']['name']
+        except:
+            pass  # If we can't get the name, just use the symbol
+            
+        # Get historical data using yfinance for price and calculations
         ticker = yf.Ticker(f"{symbol}.TW")
         hist = ticker.history(period="1mo")
+        
         if hist.empty:
             return None
-
+        
         today_price = hist.iloc[-1]['Close']
         delta_1d = (hist.iloc[-1]['Close'] - hist.iloc[-2]['Close']) / hist.iloc[-2]['Close'] * 100
         delta_7d = (hist.iloc[-1]['Close'] - hist.iloc[-6]['Close']) / hist.iloc[-6]['Close'] * 100 if len(hist) >= 7 else None
@@ -41,13 +54,15 @@ def analyze_stock(symbol):
 
         return {
             'symbol': symbol,
+            'name': stock_name,
             'price': round(today_price, 2),
             'delta_1d': round(delta_1d, 2),
-            'delta_7d': round(delta_7d, 2) if delta_7d else None,
+            'delta_7d': round(delta_7d, 2) if delta_7d is not None else None,
             'delta_30d': round(delta_30d, 2),
             'history': hist['Close'].round(2).to_dict()
         }
-    except:
+    except Exception as e:
+        print(f"Error analyzing stock {symbol}: {e}")
         return None
 
 def get_hot_stocks():
@@ -69,7 +84,10 @@ def index():
     if request.method == 'POST':
         symbol = request.form.get('symbol')
         if symbol:
+            print(f"\n=== Fetching data for symbol: {symbol} ===")
             stock_result = analyze_stock(symbol)
+            print("=== Raw stock_result ===")
+            print(stock_result)
             if not stock_result:
                 error_message = f"找不到股票代號 {symbol} 的資料"
 
