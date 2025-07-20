@@ -8,6 +8,9 @@ import pandas as pd
 import twstock
 from datetime import datetime, timedelta
 from datetime import datetime as dt
+import urllib3
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning) 
 
 app = Flask(__name__)
 
@@ -35,7 +38,7 @@ def fetch_yahoo_news():
         }
         
         print(f"Making request to: {url}")
-        res = requests.get(url, headers=headers, timeout=10)
+        res = requests.get(url, headers=headers, timeout=10, verify=False)
         print(f"Response status code: {res.status_code}")
         res.raise_for_status()
         
@@ -155,7 +158,7 @@ def fetch_news_from_anue_hu(keyword):
             'Referer': 'https://news.cnyes.com/'
         }
         
-        response = requests.get(url, headers=headers, params=params, timeout=10)
+        response = requests.get(url, headers=headers, params=params, timeout=10, verify=False)
         news_items = []
         
         if response.status_code == 200:
@@ -199,7 +202,7 @@ def fetch_news_by_keyword(keyword):
                 'Referer': 'https://tw.stock.yahoo.com/'
             }
             
-            response = requests.get(url, headers=headers, timeout=10)
+            response = requests.get(url, headers=headers, timeout=10, verify=False)
             print(f"Yahoo Finance response status: {response.status_code}")
             
             if response.status_code == 200:
